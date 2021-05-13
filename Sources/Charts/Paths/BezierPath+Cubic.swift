@@ -1,13 +1,42 @@
 import CoreGraphics
 
-struct CubicCurveSegment {
-    let controlPoint1: CGPoint
-    let controlPoint2: CGPoint
+public extension BezierPath {
+
+    convenience init?(cubic points: [CGPoint], closed: Bool) {
+        guard !points.isEmpty else { return nil }
+        self.init()
+
+        let controlPoints = CubicCurve.controlPoints(points: points)
+        var index = 0
+
+        move(to: points[index])
+        index += 1
+
+        while index < points.count {
+            let segment = controlPoints[index - 1]
+
+            addCurve(
+                to: points[index],
+                controlPoint1: segment.controlPoint1,
+                controlPoint2: segment.controlPoint2
+            )
+
+            index += 1
+        }
+
+        if closed { close() }
+    }
+
 }
 
-struct CubicCurveAlgorithm {
+struct CubicCurve {
 
-    static func controlPoints(points: [CGPoint]) -> [CubicCurveSegment] {
+    struct Segment {
+        let controlPoint1: CGPoint
+        let controlPoint2: CGPoint
+    }
+
+    static func controlPoints(points: [CGPoint]) -> [Segment] {
         var firstControlPoints: [CGPoint?] = []
         var secondControlPoints: [CGPoint?] = []
 
@@ -114,7 +143,7 @@ struct CubicCurveAlgorithm {
                 }
             }
 
-            //Compute second Control Points from first
+            // Compute second Control Points from first
 
             for i in 0..<count {
 
@@ -145,12 +174,12 @@ struct CubicCurveAlgorithm {
             }
         }
 
-        var controlPoints = [CubicCurveSegment]()
+        var controlPoints = [Segment]()
 
         for i in 0..<count {
             if let firstControlPoint = firstControlPoints[i],
                 let secondControlPoint = secondControlPoints[i] {
-                let segment = CubicCurveSegment(controlPoint1: firstControlPoint, controlPoint2: secondControlPoint)
+                let segment = Segment(controlPoint1: firstControlPoint, controlPoint2: secondControlPoint)
                 controlPoints.append(segment)
             }
         }

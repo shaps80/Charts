@@ -14,10 +14,11 @@ public struct AnimatableVector: VectorArithmetic, RandomAccessCollection {
     public init<Data>(_ elements: Data) where Data: RandomAccessCollection, Data.Element: BinaryFloatingPoint {
         self.elements = []
         let max = elements.max() ?? 0
+        let min = elements.min() ?? 0
 
         for (index, value) in elements.enumerated() {
             let x = CGFloat(index) / CGFloat(elements.count - 1)
-            let y = CGFloat(value / Swift.max(max - value, max))
+            let y = CGFloat((value - min) / (max - min))
             self.elements.append(Element(x))
             self.elements.append(Element(y))
         }

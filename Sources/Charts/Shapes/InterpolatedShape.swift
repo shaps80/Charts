@@ -51,7 +51,7 @@ extension InterpolatedShape {
 
         switch interpolation {
         case let .catmullRom(alpha):
-            path = BezierPath(catmullRom: points, closed: false, alpha: alpha) ?? BezierPath()
+            path = BezierPath(catmullRom: points, alpha: alpha, closed: false) ?? BezierPath()
         case .hermite:
             path = BezierPath(hermite: points, closed: false) ?? BezierPath()
         case .simple:
