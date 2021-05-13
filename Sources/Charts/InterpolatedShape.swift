@@ -7,9 +7,11 @@ public enum Interpolation: Equatable {
     /// Values will be interpolated using a simple method, fewest number of points will be considered
     case simple
     /// Values will be interpolated using the catmull-rom algorithm
-    case catmullRom(alpha: UIBezierPath.Alpha)
+    case catmullRom(alpha: BezierPath.Alpha)
     /// Values will be interpolated using the hermite algorithm
     case hermite
+    /// Values will be intepolated using a cubic bezier curve algorithm
+    case cubic
 }
 
 public protocol InterpolatedShape: Shape, Equatable {
@@ -22,13 +24,6 @@ public protocol InterpolatedShape: Shape, Equatable {
 
     /// If true, the path will be closed
     var closed: Bool { get set }
-
-    /// Instantiates a new shape with the specified unit-space coordinates and associated interpolation method
-    /// - Parameters:
-    ///   - unitPoints: The unit-space coordinates representing this shape
-    ///   - interpolation: The interpolation method to use for this shape
-    ///   - closed: If true, the path will be closed
-    init(_ unitPoints: [UnitPoint], interpolation: Interpolation, closed: Bool)
 
 }
 
@@ -45,24 +40,26 @@ extension InterpolatedShape {
         vector.unitPoints.map {
             CGPoint(
                 x: rect.minX + rect.width * $0.x,
-                y: rect.minY + rect.height * $0.y
+                y: rect.maxY - (rect.minY + rect.height * $0.y)
             )
         }
     }
 
     internal func interpolatedPath(in rect: CGRect) -> Path {
-        let path: UIBezierPath
+        let path: BezierPath
         let points = self.points(in: rect)
 
         switch interpolation {
         case let .catmullRom(alpha):
-            path = UIBezierPath(catmullRom: points, closed: false, alpha: alpha) ?? UIBezierPath()
+            path = BezierPath(catmullRom: points, closed: false, alpha: alpha) ?? BezierPath()
         case .hermite:
-            path = UIBezierPath(hermite: points, closed: false) ?? UIBezierPath()
+            path = BezierPath(hermite: points, closed: false) ?? BezierPath()
         case .simple:
-            path = UIBezierPath(smoothed: points, closed: false) ?? UIBezierPath()
+            path = BezierPath(smoothed: points, closed: false) ?? BezierPath()
+        case .cubic:
+            path = BezierPath(cubic: points, closed: false) ?? BezierPath()
         case .none:
-            path = UIBezierPath(points: points, closed: false) ?? UIBezierPath()
+            path = BezierPath(points: points, closed: false) ?? BezierPath()
         }
 
         return Path(path.cgPath)

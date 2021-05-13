@@ -20,7 +20,7 @@ public struct LineChartViewAxis: View {
     public var body: some View {
         HStack {
             ForEach(vector.unitPoints) { unit in
-                Text(String(format: "%.0f", unit.y * 100))
+                Text(String(format: "%.0f", unit.y))
             }
             .frame(maxWidth: .infinity)
         }

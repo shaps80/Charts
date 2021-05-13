@@ -11,8 +11,16 @@ public struct AnimatableVector: VectorArithmetic, RandomAccessCollection {
 
     /// Instantiates an animatable vector with a series of values
     /// - Parameter elements: The values this vector will represent.
-    public init<T>(_ elements: [T]) where T: BinaryFloatingPoint {
-        self.elements = elements.map { Element($0) }
+    public init<Data>(_ elements: Data) where Data: RandomAccessCollection, Data.Element: BinaryFloatingPoint {
+        self.elements = []
+        let max = elements.max() ?? 0
+
+        for (index, value) in elements.enumerated() {
+            let x = CGFloat(index) / CGFloat(elements.count - 1)
+            let y = CGFloat(value / Swift.max(max - value, max))
+            self.elements.append(Element(x))
+            self.elements.append(Element(y))
+        }
     }
 
 }

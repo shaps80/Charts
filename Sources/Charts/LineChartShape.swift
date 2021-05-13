@@ -8,11 +8,11 @@ public struct LineChartShape: InterpolatedShape {
 
     /// Instantiates a new shape with the specified unit-space coordinates and associated interpolation method
     /// - Parameters:
-    ///   - unitPoints: The unit-space coordinates representing this shape
+    ///   - data: An array of values representing the chart
     ///   - interpolation: The interpolation method to use for this shape
     ///   - closed: If true, the path will be closed
-    public init(_ unitPoints: [UnitPoint], interpolation: Interpolation = .hermite, closed: Bool = false) {
-        self.vector = AnimatableVector(unitPoints)
+    public init<Data>(_ data: Data, interpolation: Interpolation = .hermite, closed: Bool = false) where Data: RandomAccessCollection, Data.Element: BinaryFloatingPoint {
+        self.vector = AnimatableVector(data)
         self.interpolation = interpolation
         self.closed = closed
     }
@@ -30,4 +30,3 @@ public struct LineChartShape: InterpolatedShape {
     }
 
 }
-

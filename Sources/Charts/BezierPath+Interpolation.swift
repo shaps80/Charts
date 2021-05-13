@@ -1,6 +1,27 @@
-import UIKit
+import SwiftUI
 
-public extension UIBezierPath {
+#if os(iOS)
+public typealias BezierPath = UIBezierPath
+#else
+public typealias BezierPath = NSBezierPath
+extension BezierPath {
+    func addLine(to point: CGPoint) {
+        line(to: point)
+    }
+    func addQuadCurve(to endPoint: CGPoint, controlPoint: CGPoint) {
+        let startPoint = currentPoint
+        let controlPoint1 = CGPoint(x: (startPoint.x + (controlPoint.x - startPoint.x) * 2.0/3.0), y: (startPoint.y + (controlPoint.y - startPoint.y) * 2.0/3.0))
+        let controlPoint2 = CGPoint(x: (endPoint.x + (controlPoint.x - endPoint.x) * 2.0/3.0), y: (endPoint.y + (controlPoint.y - endPoint.y) * 2.0/3.0))
+        curve(to: endPoint, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
+    }
+
+    func addCurve(to endPoint: CGPoint, controlPoint1: CGPoint, controlPoint2: CGPoint) {
+        curve(to: endPoint, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
+    }
+}
+#endif
+
+public extension BezierPath {
 
     /// Simple line based path from a series of points. No smoothing will be applied
     /// - Parameter points: The array of `CGPoint`.
@@ -43,7 +64,7 @@ public extension UIBezierPath {
 
         var index = 0
 
-        while index < (points.count - 1) {
+        while index < points.count - 1 {
             switch (points.count - index) {
             case 2:
                 index += 1
@@ -67,7 +88,7 @@ public extension UIBezierPath {
 
 }
 
-public extension UIBezierPath {
+public extension BezierPath {
 
     /// Create smooth UIBezierPath using Hermite Spline
     ///
@@ -139,7 +160,36 @@ public extension UIBezierPath {
 
 }
 
-public extension UIBezierPath {
+public extension BezierPath {
+
+    convenience init?(cubic points: [CGPoint], closed: Bool) {
+        guard !points.isEmpty else { return nil }
+        self.init()
+
+        let controlPoints = CubicCurveAlgorithm.controlPoints(points: points)
+        var index = 0
+
+        move(to: points[index])
+        index += 1
+
+        while index < points.count {
+            let segment = controlPoints[index - 1]
+
+            addCurve(
+                to: points[index],
+                controlPoint1: segment.controlPoint1,
+                controlPoint2: segment.controlPoint2
+            )
+
+            index += 1
+        }
+
+        if closed { close() }
+    }
+
+}
+
+public extension BezierPath {
 
     enum Alpha: Equatable {
         case uniform
