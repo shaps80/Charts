@@ -115,7 +115,7 @@ public extension Path {
         })
     }
 
-    private func point(for offset: CGFloat) -> CGPoint {
+    func point(for offset: CGFloat) -> CGPoint {
         let clamped = min(max(offset, 0), 1)
         guard clamped > 0 else { return cgPath.currentPoint }
         return trimmedPath(from: 0, to: clamped).cgPath.currentPoint
