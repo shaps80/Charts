@@ -11,10 +11,11 @@ public struct AnimatableVector: VectorArithmetic, RandomAccessCollection {
 
     /// Instantiates an animatable vector with a series of values
     /// - Parameter elements: The values this vector will represent.
-    public init<Data>(_ elements: Data) where Data: RandomAccessCollection, Data.Element: BinaryFloatingPoint {
+    public init<Data>(_ elements: Data, in range: ClosedRange<Data.Element>? = nil) where Data: RandomAccessCollection, Data.Element: BinaryFloatingPoint {
+        let max = range?.upperBound ?? elements.max() ?? 0
+        let min = range?.lowerBound ?? elements.min() ?? 0
+
         self.elements = []
-        let max = elements.max() ?? 0
-        let min = elements.min() ?? 0
 
         for (index, value) in elements.enumerated() {
             let x = CGFloat(index) / CGFloat(elements.count - 1)

@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct LineChartShape: InterpolatedShape {
+public struct LineChart: InterpolatedShape {
 
     public var vector: AnimatableVector
     public var interpolation: Interpolation
@@ -11,8 +11,8 @@ public struct LineChartShape: InterpolatedShape {
     ///   - data: An array of values representing the chart
     ///   - interpolation: The interpolation method to use for this shape
     ///   - closed: If true, the path will be closed
-    public init<Data>(_ data: Data, interpolation: Interpolation = .hermite, closed: Bool = false) where Data: RandomAccessCollection, Data.Element: BinaryFloatingPoint {
-        self.vector = AnimatableVector(data)
+    public init<Data>(_ data: Data, in range: ClosedRange<Data.Element>? = nil, interpolation: Interpolation = .hermite, closed: Bool = false) where Data: RandomAccessCollection, Data.Element: BinaryFloatingPoint {
+        self.vector = AnimatableVector(data, in: range)
         self.interpolation = interpolation
         self.closed = closed
     }

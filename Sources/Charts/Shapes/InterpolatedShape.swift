@@ -45,7 +45,7 @@ extension InterpolatedShape {
         }
     }
 
-    internal func interpolatedPath(in rect: CGRect) -> Path {
+    public func interpolatedPath(in rect: CGRect) -> Path {
         let path: BezierPath
         let points = self.points(in: rect)
 
