@@ -17,6 +17,12 @@ public struct LineChart: InterpolatedShape {
         self.closed = closed
     }
 
+    public init<Data>(_ geometry: ChartProxy<Data, Data.Element>, interpolation: Interpolation = .hermite, closed: Bool = false) where Data: RandomAccessCollection, Data.Element: BinaryFloatingPoint {
+        self.vector = AnimatableVector(geometry.values, in: geometry.sourceRange)
+        self.interpolation = interpolation
+        self.closed = closed
+    }
+
     public func path(in rect: CGRect) -> Path {
         var path = interpolatedPath(in: rect)
 
